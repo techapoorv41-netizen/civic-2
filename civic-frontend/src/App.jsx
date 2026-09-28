@@ -1,6 +1,11 @@
+import AppRoutes from "./Routes/AppRoutes";
+
 function app(){
   return(
-  <h1 className="text-4xl font-bold text-blue-600">hello tailwind</h1>  
+ <div className="min-h-screen bg-gray-100">
+  <AppRoutes/>
+ </div>
+
   )
 }
 

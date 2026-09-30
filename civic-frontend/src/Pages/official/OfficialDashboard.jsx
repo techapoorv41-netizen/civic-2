@@ -1,183 +1,108 @@
-import { useState, useEffect } from "react";
-import { getIssues, assignIssue } from "../../api/issueApi";
-import { getAllUsers, blockUser, unblockUser } from "../../api/userApi";
-import ReportAnalysisChart from "../../components/charts/ReportAnalysisChart";
-import Modal from "../../components/common/Modal";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { getIssues, getMyAssignments } from "../../api/issueApi";
+import Sidebar from "../../components/common/Sidebar";
+import IssueCard from "../../components/issue/IssueCard";
+import Loader from "../../components/common/Loader";
+import { ROUTES, ISSUE_STATUS } from "../../utils/constants";
+import { CheckSquare, AlertCircle, Clock, ShieldCheck, ArrowRight } from "lucide-react";
 
-function AdminDashboard() {
-  const [issues, setIssues] = useState([]);
-  const [users, setUsers] = useState([]);
+const OfficialDashboard = () => {
+  const [assignedIssues, setAssignedIssues] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedIssueId, setSelectedIssueId] = useState(null);
-  const [officialId, setOfficialId] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
-      const [issuesRes, usersRes] = await Promise.all([
-        getIssues(),
-        getAllUsers(),
-      ]);
-      if (issuesRes.success) setIssues(issuesRes.data);
-      if (usersRes.success) setUsers(usersRes.data);
+      const res = await getMyAssignments();
+      if (res.success && Array.isArray(res.data)) {
+        setAssignedIssues(res.data);
+      }
       setLoading(false);
     };
     fetchData();
   }, []);
 
-  const handleToggleBlock = async (userId, isBlocked) => {
-    const res = isBlocked ? await unblockUser(userId) : await blockUser(userId);
-    if (res.success) {
-      setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, isBlocked: !isBlocked } : u))
-      );
-    }
-  };
-
-  const handleAssign = async () => {
-    if (!officialId) return;
-    const res = await assignIssue(selectedIssueId, { officialId });
-    if (res.success) {
-      setIssues((prev) =>
-        prev.map((i) =>
-          i.id === selectedIssueId ? { ...i, assignedTo: officialId } : i
-        )
-      );
-    }
-    setSelectedIssueId(null);
-    setOfficialId("");
-  };
+  const totalAssigned = assignedIssues.length;
+  const pendingActions = assignedIssues.filter(
+    (i) => i.status === ISSUE_STATUS.PENDING || i.status === ISSUE_STATUS.IN_PROGRESS
+  ).length;
 
   if (loading) {
-    return <p className="text-center text-gray-500 py-8">Loading dashboard...</p>;
+    return <Loader fullScreen message="Loading Official Portal..." />;
   }
 
-  const totalIssues = issues.length;
-  const totalUsers = users.length;
-  const totalOfficials = users.filter((u) => u.role === "official").length;
-
-  const categoryBreakdown = Object.values(
-    issues.reduce((acc, issue) => {
-      acc[issue.category] = acc[issue.category] || { category: issue.category, count: 0 };
-      acc[issue.category].count += 1;
-      return acc;
-    }, {})
-  );
-
-  const officials = users.filter((u) => u.role === "official");
-
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold text-gray-800">Admin Dashboard</h2>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <p className="text-sm text-gray-500">Total Issues</p>
-          <p className="text-2xl font-semibold text-gray-800">{totalIssues}</p>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <p className="text-sm text-gray-500">Total Users</p>
-          <p className="text-2xl font-semibold text-gray-800">{totalUsers}</p>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <p className="text-sm text-gray-500">Total Officials</p>
-          <p className="text-2xl font-semibold text-gray-800">{totalOfficials}</p>
-        </div>
-      </div>
-
-      {/* Chart */}
-      <ReportAnalysisChart data={categoryBreakdown} />
-
-      {/* Issues List with Assign action */}
-      <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">Issues</h3>
-        <div className="space-y-2">
-          {issues.map((issue) => (
-            <div
-              key={issue.id}
-              className="flex justify-between items-center border border-gray-200 rounded-lg p-3 bg-white"
-            >
-              <div>
-                <p className="font-medium text-gray-800">{issue.title}</p>
-                <p className="text-xs text-gray-500">
-                  {issue.assignedTo ? "Assigned" : "Unassigned"}
-                </p>
-              </div>
-              {!issue.assignedTo && (
-                <button
-                  onClick={() => setSelectedIssueId(issue.id)}
-                  className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm hover:bg-blue-700"
-                >
-                  Assign
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Manage Users */}
-      <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">Manage Users</h3>
-        <div className="space-y-2">
-          {users.map((u) => (
-            <div
-              key={u.id}
-              className="flex justify-between items-center border border-gray-200 rounded-lg p-3 bg-white"
-            >
-              <div>
-                <p className="font-medium text-gray-800">{u.name}</p>
-                <p className="text-xs text-gray-500">{u.role}</p>
-              </div>
-              <button
-                onClick={() => handleToggleBlock(u.id, u.isBlocked)}
-                className={`px-3 py-1.5 rounded-md text-sm ${
-                  u.isBlocked
-                    ? "bg-green-600 text-white hover:bg-green-700"
-                    : "bg-red-600 text-white hover:bg-red-700"
-                }`}
-              >
-                {u.isBlocked ? "Unblock" : "Block"}
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Assign Modal */}
-      {selectedIssueId && (
-        <Modal onClose={() => setSelectedIssueId(null)}>
-          <h3 className="font-semibold text-gray-800 mb-3">Assign Issue</h3>
-          <select
-            value={officialId}
-            onChange={(e) => setOfficialId(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mb-3"
-          >
-            <option value="">Select official</option>
-            {officials.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
-            ))}
-          </select>
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => setSelectedIssueId(null)}
-              className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleAssign}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
-            >
-              Assign
-            </button>
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+      <Sidebar />
+      <main className="flex-1 p-6 sm:p-8 space-y-8">
+        
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+              Official Task Dashboard
+            </h1>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              Manage assigned municipal tickets, accept/reject reports, and submit status updates.
+            </p>
           </div>
-        </Modal>
-      )}
+
+          <Link to={ROUTES.OFFICIAL_HANDLE_REPORTS}>
+            <button className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs rounded-2xl shadow-lg shadow-teal-600/20 transition-all flex items-center gap-2">
+              <CheckSquare size={16} />
+              Handle Pending Reports
+            </button>
+          </Link>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-3xl shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+              <CheckSquare size={24} />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">My Total Assignments</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{totalAssigned}</h3>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-3xl shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <Clock size={24} />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending Action Required</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{pendingActions}</h3>
+            </div>
+          </div>
+        </div>
+
+        {/* Assigned Issues List */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Assigned Issues Queue</h2>
+            <Link to={ROUTES.OFFICIAL_ALL_ISSUES} className="text-xs font-semibold text-teal-600 hover:underline">
+              View All Department Issues &rarr;
+            </Link>
+          </div>
+
+          {assignedIssues.length === 0 ? (
+            <div className="p-8 text-center text-xs text-slate-500 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+              No assigned tasks pending in your department queue.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {assignedIssues.map((issue) => (
+                <IssueCard key={issue.id} issue={issue} />
+              ))}
+            </div>
+          )}
+        </div>
+
+      </main>
     </div>
   );
-}
+};
 
-export default AdminDashboard;
+export default OfficialDashboard;

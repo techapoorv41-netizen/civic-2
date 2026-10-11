@@ -1,11 +1,12 @@
+import React from "react";
 import IssueForm from "../../components/issue/IssueForm";
 
-function ReportIssue() {
+const ReportIssue = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8">
       <IssueForm />
     </div>
   );
-}
+};
 
 export default ReportIssue;

@@ -1,27 +1,21 @@
-function IssueStatusBadge({ status }) {
-  const statusStyles = {
-    pending: "bg-yellow-100 text-yellow-700",
-    in_progress: "bg-blue-100 text-blue-700",
-    resolved: "bg-green-100 text-green-700",
-    rejected: "bg-red-100 text-red-700",
-  };
+import React from "react";
+import { getStatusColor } from "../../utils/helpers";
 
-  const statusText = {
-    pending: "Pending",
-    in_progress: "In Progress",
-    resolved: "Resolved",
-    rejected: "Rejected",
-  };
+const IssueStatusBadge = ({ status }) => {
+  const formattedText =
+    typeof status === "string"
+      ? status.replace("_", " ").toUpperCase()
+      : "PENDING";
+
+  const colorStyle = getStatusColor(status);
 
   return (
     <span
-      className={`px-2 py-1 rounded-full text-xs font-medium ${
-        statusStyles[status] || "bg-gray-100 text-gray-700"
-      }`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-extrabold tracking-wider border shadow-sm ${colorStyle}`}
     >
-      {statusText[status] || status}
+      {formattedText}
     </span>
   );
-}
+};
 
 export default IssueStatusBadge;

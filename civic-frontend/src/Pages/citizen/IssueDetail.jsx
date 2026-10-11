@@ -5,8 +5,8 @@ import {
   getIssueHistory,
   getComments,
   addComment,
-} from "..//api/issueApi";
-import { getAnalysis } from "..//api/aiApi";
+} from "../../api/issueApi";
+import { getAnalysis } from "../../api/aiApi";
 import IssueMap from "../../components/issue/IssueMap";
 import IssueStatusBadge from "../../components/issue/IssueStatusBadge";
 import Loader from "../../components/common/Loader";

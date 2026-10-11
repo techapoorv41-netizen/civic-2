@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getIssues, assignIssue } from "../../api/issueApi";
+import { getIssues, assignIssue } from "..//api/issueApi";
 import { getAllUsers, blockUser, unblockUser } from "../../api/userApi";
 import ReportAnalysisChart from "../../components/charts/ReportAnalysisChart";
 import Modal from "../../components/common/Modal";

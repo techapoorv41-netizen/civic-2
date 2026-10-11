@@ -12,6 +12,6 @@ connectDB()
 
 app.listen(3000,()=>{
     console.log("server is working on 3000 port");
-    
+       
 })
 

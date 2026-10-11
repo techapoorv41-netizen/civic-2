@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
-// Ronak pages
+
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Homepage from "../pages/citizen/Homepage";
@@ -11,7 +11,7 @@ import OfficialDashboard from "../pages/official/OfficialDashboard";
 import OfficialNotifications from "../pages/official/OfficialNotifications";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 
-// Apoorv pages
+
 import ReportIssue from "../pages/citizen/ReportIssue";
 import IssueDetail from "../pages/citizen/IssueDetail";
 import AllReportAnalysis from "../pages/citizen/AllReportAnalysis";

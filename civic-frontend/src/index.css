@@ -1,8 +1,22 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
+
+@theme {
+  --color-govNavy: #0B2545;
+  --color-govOrange: #D96B27;
+  --color-govSlate: #134074;
+  --color-govLight: #EEF4F8;
+  --color-govText: #020B14;
+  --color-gov-navy: #0B2545;
+  --color-gov-orange: #D96B27;
+  --color-gov-slate: #134074;
+  --color-gov-light: #EEF4F8;
+  --color-gov-text: #020B14;
+}
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-govLight text-govText antialiased;
   }
 }
 

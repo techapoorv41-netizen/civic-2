@@ -27,9 +27,9 @@ const Sidebar = () => {
         ];
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 text-slate-300 min-h-[calc(100vh-4rem)] p-4 hidden md:block">
-      <div className="mb-6 px-3 py-2 bg-slate-800/60 rounded-xl border border-slate-700/60">
-        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+    <aside className="w-64 bg-govNavy border-r border-govSlate text-slate-200 min-h-[calc(100vh-4rem)] p-4 hidden md:block">
+      <div className="mb-6 px-3 py-2 bg-govSlate/60 rounded-xl border border-govSlate">
+        <p className="text-[11px] font-bold text-govOrange uppercase tracking-wider">
           {user.role} Portal
         </p>
         <p className="text-sm font-bold text-white truncate">{user.name}</p>
@@ -44,8 +44,8 @@ const Sidebar = () => {
               to={link.path}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                 isActive
-                  ? "bg-teal-600 text-white shadow-lg shadow-teal-600/20"
-                  : "hover:bg-slate-800 text-slate-400 hover:text-slate-100"
+                  ? "bg-govOrange text-white shadow-md shadow-govOrange/20 font-bold"
+                  : "hover:bg-govSlate text-slate-200 hover:text-white"
               }`}
             >
               {link.icon}

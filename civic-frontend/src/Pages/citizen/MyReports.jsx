@@ -35,31 +35,31 @@ const MyReports = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-govLight py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Title */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-govNavy tracking-tight">
             My Submitted Reports
           </h1>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-xs text-govText mt-1">
             Filter, search, and track resolution timelines of issues you reported.
           </p>
         </div>
 
         {/* Filter Toolbar */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 rounded-3xl shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
+        <div className="bg-white border border-slate-200 p-4 rounded-3xl shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
           
           {/* Search Input */}
           <div className="relative w-full sm:w-80">
-            <Search size={18} className="absolute left-3.5 top-3 text-slate-400" />
+            <Search size={18} className="absolute left-3.5 top-2.5 text-govSlate" />
             <input
               type="text"
               placeholder="Search reports by keyword..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+              className="w-full pl-10 pr-4 py-2 bg-govLight border border-slate-300 rounded-2xl text-xs text-govText focus:outline-none focus:ring-2 focus:ring-govSlate/20 focus:border-govSlate"
             />
           </div>
 
@@ -71,8 +71,8 @@ const MyReports = () => {
                 onClick={() => setStatusFilter(st)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize whitespace-nowrap transition-colors cursor-pointer ${
                   statusFilter === st
-                    ? "bg-teal-600 text-white shadow-sm"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    ? "bg-govNavy text-white shadow-sm font-bold"
+                    : "text-govText hover:bg-govLight"
                 }`}
               >
                 {st.replace("_", " ")}
@@ -84,7 +84,7 @@ const MyReports = () => {
 
         {/* Grid List */}
         {filteredIssues.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-500 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+          <div className="p-12 text-center text-xs text-govText bg-white rounded-3xl border border-slate-200">
             No matching reports found for your filter criteria.
           </div>
         ) : (

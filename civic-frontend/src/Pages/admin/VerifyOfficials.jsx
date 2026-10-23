@@ -32,20 +32,20 @@ const VerifyOfficials = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen bg-govLight">
       <Sidebar />
       <main className="flex-1 p-6 sm:p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-2xl font-extrabold text-govNavy tracking-tight">
             Verify Pending Officials
           </h1>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-xs text-govText mt-1">
             Review official credentials and authorize municipal department access.
           </p>
         </div>
 
         {officials.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-500 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+          <div className="p-12 text-center text-xs text-govText bg-white rounded-3xl border border-slate-200">
             No pending official verification requests in the queue.
           </div>
         ) : (
@@ -53,19 +53,19 @@ const VerifyOfficials = () => {
             {officials.map((official) => (
               <div
                 key={official.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-3xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="bg-white border border-slate-200 p-5 rounded-3xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="space-y-1">
-                  <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <ShieldCheck size={16} className="text-teal-600" />
+                  <h3 className="font-bold text-sm text-govNavy flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-govSlate" />
                     {official.name}
                   </h3>
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-govText/70">
                     <span className="flex items-center gap-1">
-                      <Mail size={12} /> {official.email}
+                      <Mail size={12} className="text-govSlate" /> {official.email}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Building size={12} /> {official.department || "Public Works"}
+                      <Building size={12} className="text-govSlate" /> {official.department || "Public Works"}
                     </span>
                   </div>
                 </div>
@@ -74,7 +74,6 @@ const VerifyOfficials = () => {
                   onClick={() => handleVerify(official.id)}
                   variant="primary"
                   size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700"
                 >
                   Approve & Verify Official
                 </Button>

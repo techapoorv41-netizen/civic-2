@@ -8,6 +8,8 @@ export const NotificationProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const fetchNotifications = useCallback(async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
     try {
       const res = await getNotifications();
       if (res.success && Array.isArray(res.data)) {

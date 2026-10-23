@@ -73,49 +73,49 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen bg-govLight">
       <Sidebar />
       <main className="flex-1 p-6 sm:p-8 space-y-8">
         
         {/* Header */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-govNavy tracking-tight">
             System Administration Console
           </h1>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-xs text-govText mt-1">
             Global system overview, user permissions management, and task dispatching.
           </p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-3xl shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+          <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-govLight text-govNavy flex items-center justify-center shrink-0">
               <Users size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Registered Users</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{users.length}</h3>
+              <p className="text-[11px] font-bold text-govText/70 uppercase tracking-wider">Total Registered Users</p>
+              <h3 className="text-3xl font-extrabold text-govNavy">{users.length}</h3>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-3xl shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+          <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-govLight text-govOrange flex items-center justify-center shrink-0">
               <FileText size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">System Total Issues</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{issues.length}</h3>
+              <p className="text-[11px] font-bold text-govText/70 uppercase tracking-wider">System Total Issues</p>
+              <h3 className="text-3xl font-extrabold text-govNavy">{issues.length}</h3>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-3xl shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+          <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-govLight text-govSlate flex items-center justify-center shrink-0">
               <ShieldAlert size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Department Officials</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{officials.length}</h3>
+              <p className="text-[11px] font-bold text-govText/70 uppercase tracking-wider">Department Officials</p>
+              <h3 className="text-3xl font-extrabold text-govNavy">{officials.length}</h3>
             </div>
           </div>
         </div>
@@ -124,20 +124,20 @@ const AdminDashboard = () => {
         <ReportAnalysisChart data={chartData} />
 
         {/* Issue Assignment Dispatch Queue */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-3xl shadow-sm space-y-4">
-          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">Issue Assignment Dispatch</h2>
+        <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+          <h2 className="text-base font-bold text-govNavy">Issue Assignment Dispatch</h2>
           <div className="space-y-3">
             {issues.map((issue) => (
               <div
                 key={issue.id}
-                className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="p-4 rounded-2xl border border-slate-200 bg-govLight/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{issue.title}</span>
+                    <span className="text-xs font-bold text-govNavy">{issue.title}</span>
                     <IssueStatusBadge status={issue.status} />
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-govText/70 mt-0.5">
                     {issue.assignedTo ? `Assigned to: Official #${issue.assignedTo}` : "Status: Unassigned"}
                   </p>
                 </div>
@@ -156,17 +156,17 @@ const AdminDashboard = () => {
         </div>
 
         {/* Manage User Permissions */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-3xl shadow-sm space-y-4">
-          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">User Governance & Access Control</h2>
+        <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+          <h2 className="text-base font-bold text-govNavy">User Governance & Access Control</h2>
           <div className="space-y-3">
             {users.map((u) => (
               <div
                 key={u.id}
-                className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4"
+                className="p-4 rounded-2xl border border-slate-200 flex items-center justify-between gap-4"
               >
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">{u.name}</h4>
-                  <p className="text-[11px] text-slate-500">{u.email} • Role: <span className="capitalize font-semibold">{u.role}</span></p>
+                  <h4 className="text-xs font-bold text-govNavy">{u.name}</h4>
+                  <p className="text-[11px] text-govText/70">{u.email} • Role: <span className="capitalize font-semibold text-govSlate">{u.role}</span></p>
                 </div>
 
                 <Button
@@ -191,19 +191,19 @@ const AdminDashboard = () => {
           >
             <form onSubmit={handleAssignSubmit} className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-semibold text-govText block mb-1">
                   Select Department Official
                 </label>
                 <select
                   value={selectedOfficialId}
                   onChange={(e) => setSelectedOfficialId(e.target.value)}
-                  className="w-full rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none"
+                  className="w-full rounded-2xl bg-govLight border border-slate-300 px-4 py-2.5 text-xs text-govText focus:outline-none focus:ring-2 focus:ring-govSlate/20 focus:border-govSlate"
                   required
                 >
                   <option value="">Select an Official...</option>
                   {officials.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.name} ({o.department || "Public Works"})
+                    <option key={o.id} value={o.userId || o.id}>
+                      {o.name || o.user?.name || "Official"} ({o.department || "Public Works"})
                     </option>
                   ))}
                 </select>

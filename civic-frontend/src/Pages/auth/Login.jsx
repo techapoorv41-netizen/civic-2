@@ -53,10 +53,14 @@ const Login = () => {
           navigate(ROUTES.CITIZEN_HOME, { replace: true });
         }
       } else {
-        setServerError(res.meta?.error || res.error || "Login failed. Please check credentials.");
+        setServerError(res.error?.message || res.meta?.error || res.error || "Login failed. Please check credentials.");
       }
     } catch (err) {
-      setServerError("An unexpected error occurred. Please try again.");
+      setServerError(
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        "An unexpected error occurred. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -77,34 +81,34 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-950 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors">
+    <div className="min-h-[calc(100vh-4rem)] bg-govLight flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-xl shadow-teal-500/25">
+          <div className="w-14 h-14 rounded-2xl bg-govNavy flex items-center justify-center text-govOrange shadow-xl shadow-govNavy/20">
             <ShieldAlert size={32} className="stroke-[2.2]" />
           </div>
         </div>
 
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-govNavy tracking-tight">
           Welcome back to CivicSense
         </h2>
-        <p className="mt-2 text-center text-xs text-slate-600 dark:text-slate-400">
+        <p className="mt-2 text-center text-xs text-govText">
           Empowering citizens & officials for smarter civic resolution
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white dark:bg-slate-900 py-8 px-6 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/80 dark:border-slate-800 rounded-3xl sm:px-10">
+        <div className="bg-white py-8 px-6 shadow-xl shadow-govNavy/5 border border-slate-200 rounded-3xl sm:px-10">
           
           {/* Role Toggle Selector */}
-          <div className="mb-6 p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl flex gap-1">
+          <div className="mb-6 p-1.5 bg-govLight rounded-2xl flex gap-1 border border-slate-200">
             <button
               type="button"
               onClick={() => setFormData((prev) => ({ ...prev, role: ROLES.CITIZEN }))}
               className={`flex-1 py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                 formData.role === ROLES.CITIZEN
-                  ? "bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                  ? "bg-govNavy text-white shadow-sm font-bold"
+                  : "text-govText hover:text-govNavy hover:bg-white"
               }`}
             >
               <UserCheck size={14} />
@@ -115,8 +119,8 @@ const Login = () => {
               onClick={() => setFormData((prev) => ({ ...prev, role: ROLES.OFFICIAL }))}
               className={`flex-1 py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                 formData.role === ROLES.OFFICIAL
-                  ? "bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                  ? "bg-govNavy text-white shadow-sm font-bold"
+                  : "text-govText hover:text-govNavy hover:bg-white"
               }`}
             >
               <Shield size={14} />
@@ -127,8 +131,8 @@ const Login = () => {
               onClick={() => setFormData((prev) => ({ ...prev, role: ROLES.ADMIN }))}
               className={`flex-1 py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                 formData.role === ROLES.ADMIN
-                  ? "bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                  ? "bg-govNavy text-white shadow-sm font-bold"
+                  : "text-govText hover:text-govNavy hover:bg-white"
               }`}
             >
               <KeyRound size={14} />
@@ -137,8 +141,9 @@ const Login = () => {
           </div>
 
           {serverError && (
-            <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-medium">
-              {serverError}
+            <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-govOrange/30 text-govOrange text-xs font-bold flex items-center gap-2">
+              <span className="shrink-0 text-base">⚠️</span>
+              <span>{serverError}</span>
             </div>
           )}
 
@@ -179,29 +184,29 @@ const Login = () => {
           </form>
 
           {/* Demo Autofill Helpers */}
-          <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-3">
+          <div className="mt-6 pt-6 border-t border-slate-200">
+            <p className="text-[11px] font-bold text-govSlate uppercase tracking-wider text-center mb-3">
               Quick Demo Logins
             </p>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => handleQuickFill(ROLES.CITIZEN)}
-                className="flex-1 py-1.5 px-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-medium text-slate-700 dark:text-slate-300 transition-colors cursor-pointer text-center"
+                className="flex-1 py-1.5 px-2 bg-govLight hover:bg-govSlate/10 border border-slate-200 rounded-xl text-[11px] font-semibold text-govSlate transition-colors cursor-pointer text-center"
               >
                 Citizen
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickFill(ROLES.OFFICIAL)}
-                className="flex-1 py-1.5 px-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-medium text-slate-700 dark:text-slate-300 transition-colors cursor-pointer text-center"
+                className="flex-1 py-1.5 px-2 bg-govLight hover:bg-govSlate/10 border border-slate-200 rounded-xl text-[11px] font-semibold text-govSlate transition-colors cursor-pointer text-center"
               >
                 Official
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickFill(ROLES.ADMIN)}
-                className="flex-1 py-1.5 px-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-medium text-slate-700 dark:text-slate-300 transition-colors cursor-pointer text-center"
+                className="flex-1 py-1.5 px-2 bg-govLight hover:bg-govSlate/10 border border-slate-200 rounded-xl text-[11px] font-semibold text-govSlate transition-colors cursor-pointer text-center"
               >
                 Admin
               </button>
@@ -209,11 +214,11 @@ const Login = () => {
           </div>
 
           <div className="mt-6 text-center">
-            <p className="text-xs text-slate-600 dark:text-slate-400">
+            <p className="text-xs text-govText">
               Don't have an account?{" "}
               <Link
                 to={ROUTES.REGISTER}
-                className="font-bold text-teal-600 hover:text-teal-700 dark:text-teal-400"
+                className="font-bold text-govSlate hover:text-govOrange underline decoration-govOrange/50 transition-colors"
               >
                 Register here
               </Link>

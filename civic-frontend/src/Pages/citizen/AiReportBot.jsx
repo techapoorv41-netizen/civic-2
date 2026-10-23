@@ -57,14 +57,14 @@ const AiReportBot = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-govLight py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-6">
         
         {/* Top Bar */}
         <div className="flex items-center justify-between">
           <Link
             to={`/citizen/issue/${id}`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-teal-600 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-govSlate hover:text-govNavy transition-colors"
           >
             <ArrowLeft size={16} />
             Back to Issue #{id}
@@ -72,29 +72,29 @@ const AiReportBot = () => {
         </div>
 
         {/* Chat Window Container */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-xl overflow-hidden flex flex-col h-[650px]">
+        <div className="bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden flex flex-col h-[650px]">
           
           {/* Header */}
-          <div className="p-4 sm:p-5 bg-gradient-to-r from-teal-900 to-slate-900 text-white flex items-center gap-3 border-b border-slate-800">
-            <div className="p-2 bg-teal-500/20 rounded-xl text-teal-300">
+          <div className="p-4 sm:p-5 bg-govNavy text-white flex items-center gap-3 border-b border-govSlate">
+            <div className="p-2 bg-govSlate rounded-xl text-govOrange">
               <Bot size={24} />
             </div>
             <div>
-              <h2 className="font-extrabold text-sm sm:text-base flex items-center gap-2">
+              <h2 className="font-extrabold text-sm sm:text-base flex items-center gap-2 text-white">
                 CivicSense AI Assistant
-                <span className="text-[10px] bg-teal-500/20 text-teal-300 px-2 py-0.5 rounded-full border border-teal-500/30">
+                <span className="text-[10px] bg-govOrange text-white px-2 py-0.5 rounded-full font-bold">
                   Online
                 </span>
               </h2>
-              <p className="text-[11px] text-slate-300">Ask questions regarding ticket #{id} resolution & repair guides</p>
+              <p className="text-[11px] text-slate-200">Ask questions regarding ticket #{id} resolution & repair guides</p>
             </div>
           </div>
 
           {/* Messages Feed */}
-          <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 bg-slate-50/50 dark:bg-slate-950/50">
+          <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 bg-govLight/40">
             {messages.length === 0 && !loading && (
-              <div className="text-center py-12 text-slate-400 text-xs space-y-2">
-                <Sparkles size={28} className="mx-auto text-teal-500 opacity-60" />
+              <div className="text-center py-12 text-govText text-xs space-y-2">
+                <Sparkles size={28} className="mx-auto text-govOrange opacity-80" />
                 <p>No messages yet. Ask me anything about this civic issue!</p>
               </div>
             )}
@@ -105,7 +105,7 @@ const AiReportBot = () => {
                 className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
               >
                 {msg.sender === "bot" && (
-                  <div className="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                  <div className="w-8 h-8 rounded-xl bg-govOrange text-white flex items-center justify-center shrink-0 shadow-md">
                     <Bot size={16} />
                   </div>
                 )}
@@ -113,15 +113,15 @@ const AiReportBot = () => {
                 <div
                   className={`max-w-[80%] p-3.5 rounded-2xl text-xs leading-relaxed ${
                     msg.sender === "user"
-                      ? "bg-teal-600 text-white rounded-br-none shadow-md shadow-teal-600/10"
-                      : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-bl-none shadow-sm"
+                      ? "bg-govNavy text-white rounded-br-none shadow-md shadow-govNavy/20 font-medium"
+                      : "bg-white text-govText border border-slate-200 rounded-bl-none shadow-sm"
                   }`}
                 >
                   {msg.text}
                 </div>
 
                 {msg.sender === "user" && (
-                  <div className="w-8 h-8 rounded-xl bg-slate-800 text-teal-400 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-govSlate text-white flex items-center justify-center shrink-0">
                     <User size={16} />
                   </div>
                 )}
@@ -129,8 +129,8 @@ const AiReportBot = () => {
             ))}
 
             {sending && (
-              <div className="flex items-center gap-2 text-xs text-slate-400 italic">
-                <Bot size={14} className="animate-spin text-teal-500" />
+              <div className="flex items-center gap-2 text-xs text-govSlate italic font-medium">
+                <Bot size={14} className="animate-spin text-govOrange" />
                 AI is generating response...
               </div>
             )}
@@ -139,13 +139,13 @@ const AiReportBot = () => {
           </div>
 
           {/* Input Form */}
-          <form onSubmit={handleSend} className="p-3 sm:p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex gap-2">
+          <form onSubmit={handleSend} className="p-3 sm:p-4 bg-white border-t border-slate-200 flex gap-2">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your question regarding repair guidelines..."
-              className="flex-1 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+              className="flex-1 rounded-2xl bg-govLight border border-slate-300 px-4 py-2.5 text-xs text-govText focus:outline-none focus:ring-2 focus:ring-govSlate/20 focus:border-govSlate"
             />
             <Button type="submit" variant="primary" size="sm" isLoading={sending}>
               <Send size={14} />

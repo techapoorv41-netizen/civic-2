@@ -1,4 +1,10 @@
 {
+  "name": "civicsense",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix civic-backend run dev"
+  },
   "dependencies": {
     "recharts": "^3.10.1"
   }

@@ -24,20 +24,20 @@ const AllIssues = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen bg-govLight">
       <Sidebar />
       <main className="flex-1 p-6 sm:p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-2xl font-extrabold text-govNavy tracking-tight">
             All Municipal Issues
           </h1>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-xs text-govText mt-1">
             Complete database of reported civic problems across all municipal zones.
           </p>
         </div>
 
         {issues.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-500 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+          <div className="p-8 text-center text-xs text-govText bg-white rounded-3xl border border-slate-200">
             No issues found in the registry.
           </div>
         ) : (

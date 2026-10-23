@@ -48,13 +48,21 @@ const HandleReports = () => {
     try {
       if (actionType === "complete") {
         await completeAssignment(selectedIssue.id, { remarks });
-        await updateIssue(selectedIssue.id, { status: "resolved" });
+        try {
+          await updateIssue(selectedIssue.id, { status: "resolved" });
+        } catch {
+          // Status already set to resolved by completeAssignment
+        }
         setAssignments((prev) =>
           prev.map((i) => (i.id === selectedIssue.id ? { ...i, status: "resolved" } : i))
         );
       } else if (actionType === "reject") {
         await rejectAssignment(selectedIssue.id, { remarks });
-        await updateIssue(selectedIssue.id, { status: "rejected" });
+        try {
+          await updateIssue(selectedIssue.id, { status: "rejected" });
+        } catch {
+          // Status already set to rejected by rejectAssignment
+        }
         setAssignments((prev) =>
           prev.map((i) => (i.id === selectedIssue.id ? { ...i, status: "rejected" } : i))
         );
@@ -71,20 +79,20 @@ const HandleReports = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen bg-govLight">
       <Sidebar />
       <main className="flex-1 p-6 sm:p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-2xl font-extrabold text-govNavy tracking-tight">
             Handle Assigned Reports
           </h1>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-xs text-govText mt-1">
             Accept pending assignments, update repair progress, or complete reports with inspection remarks.
           </p>
         </div>
 
         {assignments.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-500 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+          <div className="p-12 text-center text-xs text-govText bg-white rounded-3xl border border-slate-200">
             No active assignments requiring action.
           </div>
         ) : (
@@ -92,34 +100,33 @@ const HandleReports = () => {
             {assignments.map((issue) => (
               <div
                 key={issue.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-3xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="bg-white border border-slate-200 p-5 rounded-3xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400 uppercase bg-teal-50 dark:bg-teal-950 px-2 py-0.5 rounded">
+                    <span className="text-[11px] font-bold text-govNavy uppercase bg-govLight px-2 py-0.5 rounded border border-govSlate/20">
                       {issue.category}
                     </span>
                     <IssueStatusBadge status={issue.status} />
                   </div>
-                  <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">{issue.title}</h3>
-                  <p className="text-xs text-slate-500">{issue.description}</p>
+                  <h3 className="font-bold text-base text-govNavy">{issue.title}</h3>
+                  <p className="text-xs text-govText">{issue.description}</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  {issue.status === "pending" && (
+                  {(issue.status === "pending" || issue.status === "assigned") && (
                     <Button onClick={() => handleAccept(issue.id)} variant="primary" size="sm">
                       <Check size={14} />
                       Accept Assignment
                     </Button>
                   )}
 
-                  {issue.status === "in_progress" && (
+                  {(issue.status === "in_progress" || issue.status === "accepted") && (
                     <>
                       <Button
                         onClick={() => handleOpenActionModal(issue, "complete")}
-                        variant="primary"
+                        variant="secondary"
                         size="sm"
-                        className="bg-emerald-600 hover:bg-emerald-700"
                       >
                         <CheckCircle2 size={14} />
                         Mark Resolved
@@ -148,12 +155,12 @@ const HandleReports = () => {
             title={actionType === "complete" ? "Complete & Mark Resolved" : "Reject Assignment"}
           >
             <div className="space-y-4">
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Action for: <strong>{selectedIssue.title}</strong>
+              <p className="text-xs text-govText">
+                Action for: <strong className="text-govNavy">{selectedIssue.title}</strong>
               </p>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-semibold text-govText block mb-1">
                   Inspection Remarks & Repair Notes
                 </label>
                 <textarea
@@ -161,7 +168,7 @@ const HandleReports = () => {
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
                   placeholder="Enter official remarks or completion status notes..."
-                  className="w-full rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                  className="w-full rounded-2xl bg-govLight border border-slate-300 p-3 text-xs text-govText focus:outline-none focus:ring-2 focus:ring-govSlate/20 focus:border-govSlate"
                 />
               </div>
 

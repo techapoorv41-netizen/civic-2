@@ -40,20 +40,20 @@ const VerifyIssue = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen bg-govLight">
       <Sidebar />
       <main className="flex-1 p-6 sm:p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-2xl font-extrabold text-govNavy tracking-tight">
             Verify & Moderation Queue
           </h1>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-xs text-govText mt-1">
             Perform anti-spam verification before publishing citizen reports to public department feeds.
           </p>
         </div>
 
         {issues.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-500 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+          <div className="p-12 text-center text-xs text-govText bg-white rounded-3xl border border-slate-200">
             No unverified reports pending moderation.
           </div>
         ) : (
@@ -61,14 +61,14 @@ const VerifyIssue = () => {
             {issues.map((issue) => (
               <div
                 key={issue.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-3xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="bg-white border border-slate-200 p-5 rounded-3xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">{issue.title}</h3>
+                    <h3 className="font-bold text-sm text-govNavy">{issue.title}</h3>
                     <IssueStatusBadge status={issue.status} />
                   </div>
-                  <p className="text-xs text-slate-500">{issue.description}</p>
+                  <p className="text-xs text-govText">{issue.description}</p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -76,7 +76,6 @@ const VerifyIssue = () => {
                     onClick={() => handleVerify(issue.id)}
                     variant="primary"
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700"
                   >
                     <CheckCircle2 size={14} />
                     Verify Genuine

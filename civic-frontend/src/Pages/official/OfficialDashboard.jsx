@@ -32,23 +32,23 @@ const OfficialDashboard = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen bg-govLight">
       <Sidebar />
       <main className="flex-1 p-6 sm:p-8 space-y-8">
         
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-govNavy tracking-tight">
               Official Task Dashboard
             </h1>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+            <p className="text-xs text-govText mt-1">
               Manage assigned municipal tickets, accept/reject reports, and submit status updates.
             </p>
           </div>
 
           <Link to={ROUTES.OFFICIAL_HANDLE_REPORTS}>
-            <button className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs rounded-2xl shadow-lg shadow-teal-600/20 transition-all flex items-center gap-2">
+            <button className="px-5 py-2.5 bg-govOrange hover:bg-govOrange/90 text-white font-bold text-xs rounded-2xl shadow-lg shadow-govOrange/20 transition-all flex items-center gap-2 cursor-pointer">
               <CheckSquare size={16} />
               Handle Pending Reports
             </button>
@@ -57,23 +57,23 @@ const OfficialDashboard = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-3xl shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+          <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-govLight text-govNavy flex items-center justify-center shrink-0">
               <CheckSquare size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">My Total Assignments</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{totalAssigned}</h3>
+              <p className="text-[11px] font-bold text-govText/70 uppercase tracking-wider">My Total Assignments</p>
+              <h3 className="text-3xl font-extrabold text-govNavy">{totalAssigned}</h3>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-3xl shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+          <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
               <Clock size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending Action Required</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{pendingActions}</h3>
+              <p className="text-[11px] font-bold text-govText/70 uppercase tracking-wider">Pending Action Required</p>
+              <h3 className="text-3xl font-extrabold text-govNavy">{pendingActions}</h3>
             </div>
           </div>
         </div>
@@ -81,14 +81,14 @@ const OfficialDashboard = () => {
         {/* Assigned Issues List */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Assigned Issues Queue</h2>
-            <Link to={ROUTES.OFFICIAL_ALL_ISSUES} className="text-xs font-semibold text-teal-600 hover:underline">
+            <h2 className="text-lg font-bold text-govNavy">Assigned Issues Queue</h2>
+            <Link to={ROUTES.OFFICIAL_ALL_ISSUES} className="text-xs font-semibold text-govSlate hover:text-govOrange hover:underline">
               View All Department Issues &rarr;
             </Link>
           </div>
 
           {assignedIssues.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-500 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+            <div className="p-8 text-center text-xs text-govText bg-white rounded-3xl border border-slate-200">
               No assigned tasks pending in your department queue.
             </div>
           ) : (

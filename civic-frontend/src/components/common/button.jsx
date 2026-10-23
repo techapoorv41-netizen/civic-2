@@ -18,13 +18,13 @@ const Button = ({
 
   const variants = {
     primary:
-      "bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-600/20 focus:ring-teal-500 border border-transparent",
+      "bg-govOrange hover:bg-govOrange/90 text-white font-bold shadow-md shadow-govOrange/25 focus:ring-govOrange border border-transparent",
     secondary:
-      "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 focus:ring-slate-400 border border-slate-200 dark:border-slate-700",
+      "bg-govSlate hover:bg-govNavy text-white font-semibold shadow-sm focus:ring-govSlate border border-transparent",
     danger:
-      "bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/20 focus:ring-rose-500 border border-transparent",
+      "bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-md shadow-rose-600/20 focus:ring-rose-500 border border-transparent",
     outline:
-      "border-2 border-teal-600 text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950/40 focus:ring-teal-500",
+      "border-2 border-govSlate text-govSlate hover:bg-govLight font-semibold focus:ring-govSlate",
   };
 
   const sizes = {

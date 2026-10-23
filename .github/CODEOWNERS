@@ -1,0 +1,35 @@
+# Code owners for CivicSense repository
+# Global
+* @ronak @apoorv
+
+# Ronak's Ownership: Foundation, Auth, Users, Officials, Comments, Notifications, Admin/Audit, Deployment
+/civic-backend/src/app.js @ronak
+/civic-backend/src/server.js @ronak
+/civic-backend/src/routes.js @ronak
+/civic-backend/src/config/ @ronak
+/civic-backend/src/database/ @ronak
+/civic-backend/src/middleware/auth.js @ronak
+/civic-backend/src/middleware/errorHandler.js @ronak
+/civic-backend/src/middleware/asyncHandler.js @ronak
+/civic-backend/src/shared/contracts/ @ronak
+/civic-backend/src/modules/auth/ @ronak
+/civic-backend/src/modules/users/ @ronak
+/civic-backend/src/modules/officials/ @ronak
+/civic-backend/src/modules/comments/ @ronak
+/civic-backend/src/modules/notifications/ @ronak
+/civic-backend/src/modules/admin/ @ronak
+/civic-backend/scripts/seed-admin.js @ronak
+
+# Apoorv's Ownership: Issues, Assignments, Categories, Attachments, AI
+/civic-backend/src/modules/issues/ @apoorv
+/civic-backend/src/modules/assignments/ @apoorv
+/civic-backend/src/modules/categories/ @apoorv
+/civic-backend/src/modules/attachments/ @apoorv
+/civic-backend/src/modules/ai/ @apoorv
+/civic-backend/src/modules/issueHistory/ @apoorv
+/civic-backend/src/shared/response/ @apoorv
+/civic-backend/src/shared/pagination/ @apoorv
+/civic-backend/src/middleware/validate.js @apoorv
+/civic-backend/src/middleware/rateLimiter.js @apoorv
+/civic-backend/src/docs/ @apoorv
+/civic-backend/scripts/seed-categories.js @apoorv

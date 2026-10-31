@@ -1,6 +1,6 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import InputField from "../../components/common/InputField";
 import Button from "../../components/common/Button";
 import { ROLES, ROUTES } from "../../utils/constants";
@@ -179,7 +179,7 @@ const Register = () => {
 
           {serverError && (
             <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-medium flex items-start gap-2.5">
-              <span className="shrink-0">⚠️</span>
+              <span className="shrink-0">??</span>
               <span>{serverError}</span>
             </div>
           )}

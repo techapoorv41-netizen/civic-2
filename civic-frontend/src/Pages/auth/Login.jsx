@@ -1,6 +1,6 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import InputField from "../../components/common/InputField";
 import Button from "../../components/common/Button";
 import { validateEmail, validatePassword } from "../../utils/helpers";
@@ -158,7 +158,7 @@ const Login = () => {
               label="Password"
               name="password"
               type="password"
-              placeholder="••••••••"
+              placeholder="Enter your Password"
               value={formData.password}
               onChange={handleChange}
               error={errors.password}

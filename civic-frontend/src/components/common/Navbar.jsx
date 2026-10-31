@@ -1,7 +1,7 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
-import { useNotification } from "../../Context/NotificationContext";
+import { useAuth } from "../../context/AuthContext";
+import { useNotification } from "../../context/NotificationContext";
 import { ShieldAlert, Bell, LogOut, Menu, X, User } from "lucide-react";
 import { ROLES, ROUTES } from "../../utils/constants";
 

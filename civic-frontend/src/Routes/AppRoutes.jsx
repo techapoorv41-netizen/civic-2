@@ -1,39 +1,35 @@
-import React from "react";
+﻿import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import RoleRedirect from "./RoleRedirect";
 import { ROLES, ROUTES } from "../utils/constants";
-
-
-
-
-
-
-
 // Auth Pages
-import Register from "../pages/auth/Register";
-import Login from "../pages/auth/Login";
+import Register from "../Pages/auth/Register";
+import Login from "../Pages/auth/Login";
+
+// Public Info Pages
+import { PrivacyPolicy, TermsOfService, HelpDesk } from "../Pages/public/InfoPages";
 
 // Citizen Pages
-import Homepage from "../pages/citizen/Homepage";
-import Dashboard from "../pages/citizen/Dashboard";
-import ReportIssue from "../pages/citizen/ReportIssue";
-import MyReports from "../pages/citizen/MyReports";
-import IssueDetail from "../pages/citizen/IssueDetail";
-import AllReportAnalysis from "../pages/citizen/AllReportAnalysis";
-import Notifications from "../pages/citizen/Notifications";
-import AiReportBot from "../pages/citizen/AiReportBot";
+import Homepage from "../Pages/citizen/Homepage";
+import Dashboard from "../Pages/citizen/Dashboard";
+import ReportIssue from "../Pages/citizen/ReportIssue";
+import MyReports from "../Pages/citizen/MyReports";
+import IssueDetail from "../Pages/citizen/IssueDetail";
+import AllReportAnalysis from "../Pages/citizen/AllReportAnalysis";
+import Notifications from "../Pages/citizen/Notifications";
+import AiReportBot from "../Pages/citizen/AiReportBot";
 
 // Official Pages
-import OfficialDashboard from "../pages/official/OfficialDashboard";
-import AllIssues from "../pages/official/AllIssues";
-import HandleReports from "../pages/official/HandleReports";
-import OfficialNotifications from "../pages/official/OfficialNotifications";
+import OfficialDashboard from "../Pages/official/OfficialDashboard";
+import AllIssues from "../Pages/official/AllIssues";
+import HandleReports from "../Pages/official/HandleReports";
+import OfficialNotifications from "../Pages/official/OfficialNotifications";
 
 // Admin Pages
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import VerifyOfficials from "../pages/admin/VerifyOfficials";
-import VerifyIssue from "../pages/admin/VerifyIssue";
+import AdminDashboard from "../Pages/admin/AdminDashboard";
+import VerifyOfficials from "../Pages/admin/VerifyOfficials";
+import VerifyIssue from "../Pages/admin/VerifyIssue";
 
 const AppRoutes = () => {
   return (
@@ -44,6 +40,11 @@ const AppRoutes = () => {
       {/* Public Auth Routes */}
       <Route path={ROUTES.LOGIN} element={<Login />} />
       <Route path={ROUTES.REGISTER} element={<Register />} />
+
+      {/* Public Info Routes */}
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/support" element={<HelpDesk />} />
 
       {/* Citizen Protected Routes */}
       <Route
@@ -97,7 +98,7 @@ const AppRoutes = () => {
       <Route
         path={ROUTES.CITIZEN_NOTIFICATIONS}
         element={
-          <ProtectedRoute allowedRoles={[ROLES.CITIZEN]}>
+          <ProtectedRoute allowedRoles={[ROLES.CITIZEN, ROLES.OFFICIAL, ROLES.ADMIN]}>
             <Notifications />
           </ProtectedRoute>
         }
@@ -105,7 +106,7 @@ const AppRoutes = () => {
       <Route
         path={ROUTES.CITIZEN_AI_BOT}
         element={
-          <ProtectedRoute allowedRoles={[ROLES.CITIZEN]}>
+          <ProtectedRoute allowedRoles={[ROLES.CITIZEN, ROLES.OFFICIAL, ROLES.ADMIN]}>
             <AiReportBot />
           </ProtectedRoute>
         }

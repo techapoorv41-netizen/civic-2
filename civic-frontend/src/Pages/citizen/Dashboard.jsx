@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getIssues } from "../../api/issueApi";
+import { getIssues } from "../../Api/issueApi";
 import IssueCard from "../../components/issue/IssueCard";
 import Loader from "../../components/common/Loader";
 import { ROUTES, ISSUE_STATUS } from "../../utils/constants";

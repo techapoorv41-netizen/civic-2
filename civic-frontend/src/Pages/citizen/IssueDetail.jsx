@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   getIssueById,
   getIssueHistory,
   getComments,
   addComment,
-} from "../../api/issueApi";
-import { getAnalysis } from "../../api/aiApi";
+  getAttachments,
+} from "../../Api/issueApi";
+import { getAnalysis } from "../../Api/aiApi";
 import IssueMap from "../../components/issue/IssueMap";
 import IssueStatusBadge from "../../components/issue/IssueStatusBadge";
 import Loader from "../../components/common/Loader";
@@ -20,24 +21,48 @@ const IssueDetail = () => {
   const [issue, setIssue] = useState(null);
   const [history, setHistory] = useState([]);
   const [comments, setComments] = useState([]);
+  const [attachments, setAttachments] = useState([]);
   const [analysis, setAnalysis] = useState(null);
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [postingComment, setPostingComment] = useState(false);
+  const [commentError, setCommentError] = useState("");
 
   useEffect(() => {
     const fetchAllData = async () => {
-      const [issueRes, historyRes, commentsRes, analysisRes] = await Promise.all([
-        getIssueById(id),
-        getIssueHistory(id),
-        getComments(id),
-        getAnalysis(id),
-      ]);
+      const [issueRes, historyRes, commentsRes, analysisRes, attachmentsRes] =
+        await Promise.allSettled([
+          getIssueById(id),
+          getIssueHistory(id),
+          getComments(id),
+          getAnalysis(id),
+          getAttachments(id),
+        ]);
 
-      if (issueRes.success) setIssue(issueRes.data);
-      if (historyRes.success && Array.isArray(historyRes.data)) setHistory(historyRes.data);
-      if (commentsRes.success && Array.isArray(commentsRes.data)) setComments(commentsRes.data);
-      if (analysisRes.success) setAnalysis(analysisRes.data);
+      if (issueRes.status === "fulfilled" && issueRes.value?.success) {
+        setIssue(issueRes.value.data);
+      }
+      if (
+        historyRes.status === "fulfilled" &&
+        Array.isArray(historyRes.value?.data)
+      ) {
+        setHistory(historyRes.value.data);
+      }
+      if (
+        commentsRes.status === "fulfilled" &&
+        Array.isArray(commentsRes.value?.data)
+      ) {
+        setComments(commentsRes.value.data);
+      }
+      if (analysisRes.status === "fulfilled" && analysisRes.value?.success) {
+        setAnalysis(analysisRes.value.data || null);
+      }
+      if (
+        attachmentsRes.status === "fulfilled" &&
+        Array.isArray(attachmentsRes.value?.data)
+      ) {
+        setAttachments(attachmentsRes.value.data);
+      }
 
       setLoading(false);
     };
@@ -50,12 +75,18 @@ const IssueDetail = () => {
     if (!newComment.trim()) return;
 
     setPostingComment(true);
-    const res = await addComment(id, { text: newComment });
-    if (res.success) {
-      setComments((prev) => [...prev, res.data]);
-      setNewComment("");
+    setCommentError("");
+    try {
+      const res = await addComment(id, { message: newComment.trim() });
+      if (res.success) {
+        setComments((prev) => [...prev, res.data]);
+        setNewComment("");
+      }
+    } catch (err) {
+      setCommentError(err.response?.data?.error?.message || "Could not post comment.");
+    } finally {
+      setPostingComment(false);
     }
-    setPostingComment(false);
   };
 
   if (loading) {
@@ -74,10 +105,11 @@ const IssueDetail = () => {
     );
   }
 
+  const categoryName = issue.category?.name || "General";
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        
         {/* Top Back Nav & Quick AI Actions */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <Link
@@ -106,18 +138,18 @@ const IssueDetail = () => {
 
         {/* Main Card */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
-          
           {/* Header & Status */}
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
             <div>
               <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider bg-teal-50 dark:bg-teal-950/40 px-2.5 py-1 rounded-lg border border-teal-200/50">
-                {issue.category || "General"}
+                {categoryName}
               </span>
               <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">
                 {issue.title}
               </h1>
               <p className="text-xs text-slate-500 mt-1">
                 Reported on {formatDate(issue.createdAt)}
+                {issue.reporter?.name ? ` by ${issue.reporter.name}` : ""}
               </p>
             </div>
             <IssueStatusBadge status={issue.status} />
@@ -131,18 +163,19 @@ const IssueDetail = () => {
             </p>
           </div>
 
-          {/* Image Evidence */}
-          {issue.images && issue.images.length > 0 && (
+          {/* Photo Evidence (attachments API se) */}
+          {attachments.length > 0 && (
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Photo Evidence</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {issue.images.map((img, i) => (
-                  <img
-                    key={i}
-                    src={img}
-                    alt={`Evidence ${i + 1}`}
-                    className="w-full h-36 object-cover rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm"
-                  />
+                {attachments.map((a, i) => (
+                  <a key={a.id || i} href={a.url} target="_blank" rel="noreferrer">
+                    <img
+                      src={a.url}
+                      alt={a.originalName || `Evidence ${i + 1}`}
+                      className="w-full h-36 object-cover rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm"
+                    />
+                  </a>
                 ))}
               </div>
             </div>
@@ -154,6 +187,9 @@ const IssueDetail = () => {
               <MapPin size={14} className="text-teal-600" />
               Pinned Location
             </h3>
+            {issue.location?.address && (
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">{issue.location.address}</p>
+            )}
             <IssueMap location={issue.location} />
           </div>
 
@@ -167,7 +203,7 @@ const IssueDetail = () => {
                 <div>
                   <h4 className="text-xs font-bold text-teal-300 uppercase tracking-wider">AI Severity Rating</h4>
                   <p className="text-xs text-slate-300 mt-0.5">
-                    Severity Score: <span className="font-extrabold text-white">{analysis.severityScore}/10</span> | Category: <span className="font-semibold text-teal-200">{analysis.predictedCategory}</span>
+                    Severity Score: <span className="font-extrabold text-white">{analysis.severityScore}/10</span> | Category: <span className="font-semibold text-teal-200">{analysis.predictedCategory || "N/A"}</span>
                   </p>
                 </div>
               </div>
@@ -185,14 +221,19 @@ const IssueDetail = () => {
             </h3>
             <div className="space-y-3">
               {history.map((entry, idx) => (
-                <div key={idx} className="flex items-start gap-3 text-xs">
+                <div key={entry.id || idx} className="flex items-start gap-3 text-xs">
                   <div className="w-2.5 h-2.5 rounded-full bg-teal-500 mt-1 shrink-0 shadow-sm shadow-teal-500/50" />
                   <div className="flex-1 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-800 dark:text-slate-200">{entry.status}</span>
-                      <span className="text-[10px] text-slate-400">{entry.date}</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200">
+                        {entry.newStatus}
+                        {entry.actor?.name ? ` · ${entry.actor.name}` : ""}
+                      </span>
+                      <span className="text-[10px] text-slate-400">{formatDate(entry.createdAt)}</span>
                     </div>
-                    {entry.note && <p className="text-slate-600 dark:text-slate-400 mt-1">{entry.note}</p>}
+                    {entry.remarks && (
+                      <p className="text-slate-600 dark:text-slate-400 mt-1">{entry.remarks}</p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -207,13 +248,18 @@ const IssueDetail = () => {
             </h3>
 
             <div className="space-y-3">
-              {comments.map((c) => (
-                <div key={c.id} className="bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800">
-                  <p className="text-xs font-bold text-teal-600 dark:text-teal-400">{c.author}</p>
-                  <p className="text-xs text-slate-700 dark:text-slate-300 mt-1">{c.text}</p>
+              {comments.map((c, idx) => (
+                <div key={c.id || idx} className="bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800">
+                  <p className="text-xs font-bold text-teal-600 dark:text-teal-400">
+                    {c.author?.name || "User"}
+                    {c.author?.role ? ` (${c.author.role})` : ""}
+                  </p>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 mt-1">{c.message}</p>
                 </div>
               ))}
             </div>
+
+            {commentError && <p className="text-xs text-rose-500">{commentError}</p>}
 
             <form onSubmit={handleAddComment} className="flex gap-2 pt-2">
               <input
@@ -229,9 +275,7 @@ const IssueDetail = () => {
               </Button>
             </form>
           </div>
-
         </div>
-
       </div>
     </div>
   );

@@ -1,8 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { sendBotPrompt, getBotHistory } from "../../api/aiApi";
+import { sendBotPrompt, getBotHistory } from "../../Api/aiApi";
 import Button from "../../components/common/Button";
 import { Bot, Send, ArrowLeft, User, Sparkles } from "lucide-react";
+
+const getErrMsg = (err) =>
+  err?.response?.data?.error?.message ||
+  "Sorry, I could not process your query right now. Please try again.";
 
 const AiReportBot = () => {
   const { id } = useParams();
@@ -14,14 +18,18 @@ const AiReportBot = () => {
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const res = await getBotHistory(id);
-      if (res.success && Array.isArray(res.data)) {
-        const formatted = [];
-        res.data.forEach((m) => {
-          formatted.push({ sender: "user", text: m.userPrompt });
-          formatted.push({ sender: "bot", text: m.aiResponse });
-        });
-        setMessages(formatted);
+      try {
+        const res = await getBotHistory(id);
+        if (res.success && Array.isArray(res.data)) {
+          const formatted = [];
+          res.data.forEach((m) => {
+            formatted.push({ sender: "user", text: m.prompt });
+            formatted.push({ sender: "bot", text: m.response });
+          });
+          setMessages(formatted);
+        }
+      } catch (err) {
+        setMessages([{ sender: "bot", text: getErrMsg(err) }]);
       }
       setLoading(false);
     };
@@ -34,9 +42,9 @@ const AiReportBot = () => {
 
   const handleSend = async (e) => {
     if (e) e.preventDefault();
-    if (!input.trim()) return;
+    const userText = input.trim();
+    if (!userText || sending) return;
 
-    const userText = input;
     setInput("");
     setMessages((prev) => [...prev, { sender: "user", text: userText }]);
     setSending(true);
@@ -44,13 +52,10 @@ const AiReportBot = () => {
     try {
       const res = await sendBotPrompt(id, { prompt: userText });
       if (res.success && res.data) {
-        setMessages((prev) => [...prev, { sender: "bot", text: res.data.aiResponse }]);
+        setMessages((prev) => [...prev, { sender: "bot", text: res.data.response }]);
       }
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "Sorry, I could not process your query right now. Please try again." },
-      ]);
+      setMessages((prev) => [...prev, { sender: "bot", text: getErrMsg(err) }]);
     } finally {
       setSending(false);
     }
@@ -59,7 +64,7 @@ const AiReportBot = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-6">
-        
+
         {/* Top Bar */}
         <div className="flex items-center justify-between">
           <Link
@@ -73,7 +78,7 @@ const AiReportBot = () => {
 
         {/* Chat Window Container */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-xl overflow-hidden flex flex-col h-[650px]">
-          
+
           {/* Header */}
           <div className="p-4 sm:p-5 bg-gradient-to-r from-teal-900 to-slate-900 text-white flex items-center gap-3 border-b border-slate-800">
             <div className="p-2 bg-teal-500/20 rounded-xl text-teal-300">
@@ -144,6 +149,7 @@ const AiReportBot = () => {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              maxLength={500}
               placeholder="Type your question regarding repair guidelines..."
               className="flex-1 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
             />

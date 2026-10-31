@@ -1,6 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../Context/AuthContext";
 import { ROLES, ROUTES } from "../utils/constants";
 import Loader from "../components/common/Loader";
 

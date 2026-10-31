@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { getIssues } from "../../api/issueApi";
+﻿import React, { useState, useEffect } from "react";
+import { getIssues } from "../../Api/issueApi";
 import Sidebar from "../../components/common/Sidebar";
 import IssueCard from "../../components/issue/IssueCard";
 import Loader from "../../components/common/Loader";

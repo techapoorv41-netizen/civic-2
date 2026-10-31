@@ -1,83 +1,55 @@
 import instance from "./axios";
 
-// Mock user storage helper for client-side evaluation & testing
-const getMockUser = (email, role) => ({
-  id: "user_" + Date.now(),
-  name: email.split("@")[0].toUpperCase() || "Civic User",
-  email: email,
-  role: role || (email.includes("official") ? "official" : email.includes("admin") ? "admin" : "citizen"),
-  phone: "+1 555-0199",
-  isVerified: true,
-});
+// login/register/refresh के बाद tokens और user localStorage में रखो
+const saveSession = (data) => {
+  if (data?.accessToken) localStorage.setItem("accessToken", data.accessToken);
+  if (data?.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
+  if (data?.user) localStorage.setItem("civic_user", JSON.stringify(data.user));
+};
+
+const clearSession = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("civic_user");
+};
 
 export const register = async (data) => {
-  try {
-    const response = await instance.post("/auth/register", data);
-    return response.data;
-  } catch (error) {
-    // Fallback Mock Response for Testing
-    await new Promise((r) => setTimeout(r, 400));
-    const mockUser = getMockUser(data.email || "citizen@civicsense.com", data.role);
-    localStorage.setItem("accessToken", "mock_jwt_token_" + Date.now());
-    localStorage.setItem("civic_user", JSON.stringify(mockUser));
-    return {
-      success: true,
-      data: { user: mockUser, token: "mock_jwt_token" },
-      meta: { message: "Registered successfully (Mock)" },
-    };
-  }
+  const response = await instance.post("/auth/register", data);
+  saveSession(response.data.data);
+  return response.data;
 };
 
 export const login = async (data) => {
-  try {
-    const response = await instance.post("/auth/login", data);
-    return response.data;
-  } catch (error) {
-    // Fallback Mock Response for Testing
-    await new Promise((r) => setTimeout(r, 400));
-    const role = data.role || (data.email.includes("official") ? "official" : data.email.includes("admin") ? "admin" : "citizen");
-    const mockUser = getMockUser(data.email || "user@civicsense.com", role);
-    localStorage.setItem("accessToken", "mock_jwt_token_" + Date.now());
-    localStorage.setItem("civic_user", JSON.stringify(mockUser));
-    return {
-      success: true,
-      data: { user: mockUser, token: "mock_jwt_token" },
-      meta: { message: "Logged in successfully (Mock)" },
-    };
-  }
+  const response = await instance.post("/auth/login", data);
+  saveSession(response.data.data);
+  return response.data;
 };
 
 export const refreshToken = async () => {
-  try {
-    const response = await instance.post("/auth/refresh");
-    return response.data;
-  } catch (error) {
-    return { success: true, data: { token: "refreshed_mock_jwt_token" } };
-  }
+  const response = await instance.post("/auth/refresh", {
+    refreshToken: localStorage.getItem("refreshToken"),
+  });
+  saveSession(response.data.data);
+  return response.data;
 };
 
 export const logout = async () => {
   try {
-    const response = await instance.post("/auth/logout");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("civic_user");
+    const response = await instance.post("/auth/logout", {
+      refreshToken: localStorage.getItem("refreshToken"),
+    });
     return response.data;
   } catch (error) {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("civic_user");
-    return { success: true, meta: { message: "Logged out" } };
+    return { success: true, data: null, meta: null };
+  } finally {
+    clearSession();
   }
 };
 
 export const getMe = async () => {
-  try {
-    const response = await instance.get("/auth/me");
-    return response.data;
-  } catch (error) {
-    const stored = localStorage.getItem("civic_user");
-    if (stored) {
-      return { success: true, data: { user: JSON.parse(stored) } };
-    }
-    return { success: false, error: "Not authenticated" };
-  }
+  const response = await instance.get("/auth/me");
+  const user = response.data.data;
+  localStorage.setItem("civic_user", JSON.stringify(user));
+  // पुराने mock की तरह data.user भी मिले, और सीधे data.id वगैरह भी
+  return { ...response.data, data: { ...user, user } };
 };

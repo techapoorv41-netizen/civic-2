@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { createIssue, getCategories, uploadAttachment } from "../../api/issueApi";
+import { createIssue, getCategories, uploadAttachment } from "../../Api/issueApi";
 import InputField from "../common/InputField";
 import Button from "../common/Button";
 import IssueMap from "./IssueMap";
-import { Upload, MapPin, CheckCircle2 } from "lucide-react";
+import { Upload, MapPin, LocateFixed } from "lucide-react";
 
 const IssueForm = () => {
   const navigate = useNavigate();
@@ -12,20 +12,26 @@ const IssueForm = () => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    category: "",
+    categoryId: "",
+    address: "",
   });
   const [categories, setCategories] = useState([]);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [location, setLocation] = useState({ lat: 28.6139, lng: 77.209 });
+  const [coords, setCoords] = useState({ lat: "28.6139", lng: "77.2090" });
+  const [locating, setLocating] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchCats = async () => {
-      const res = await getCategories();
-      if (res.success && Array.isArray(res.data)) {
-        setCategories(res.data);
+      try {
+        const res = await getCategories();
+        if (res.success && Array.isArray(res.data)) {
+          setCategories(res.data);
+        }
+      } catch (err) {
+        setError(err.response?.data?.error?.message || "Could not load categories.");
       }
     };
     fetchCats();
@@ -37,6 +43,33 @@ const IssueForm = () => {
     if (error) setError("");
   };
 
+  const handleCoordChange = (e) => {
+    const { name, value } = e.target;
+    setCoords((prev) => ({ ...prev, [name]: value }));
+    if (error) setError("");
+  };
+
+  const useMyLocation = () => {
+    if (!navigator.geolocation) {
+      setError("Your browser does not support location.");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCoords({
+          lat: pos.coords.latitude.toFixed(6),
+          lng: pos.coords.longitude.toFixed(6),
+        });
+        setLocating(false);
+      },
+      () => {
+        setError("Could not get your location. Allow location access or type lat/lng.");
+        setLocating(false);
+      }
+    );
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -45,33 +78,82 @@ const IssueForm = () => {
     }
   };
 
+  const latNum = Number(coords.lat);
+  const lngNum = Number(coords.lng);
+  const coordsValid =
+    coords.lat !== "" &&
+    coords.lng !== "" &&
+    Number.isFinite(latNum) &&
+    Number.isFinite(lngNum) &&
+    latNum >= -90 &&
+    latNum <= 90 &&
+    lngNum >= -180 &&
+    lngNum <= 180;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!formData.title.trim() || !formData.description.trim() || !formData.category) {
+    const title = formData.title.trim();
+    const description = formData.description.trim();
+    const address = formData.address.trim();
+
+    if (!title || !description || !formData.categoryId || !address) {
       setError("Please complete all required fields (*).");
+      return;
+    }
+    if (title.length < 5) {
+      setError("Title must be at least 5 characters.");
+      return;
+    }
+    if (description.length < 10) {
+      setError("Description must be at least 10 characters.");
+      return;
+    }
+    if (address.length < 3) {
+      setError("Address must be at least 3 characters.");
+      return;
+    }
+    if (!coordsValid) {
+      setError("Latitude must be -90 to 90 and longitude -180 to 180.");
       return;
     }
 
     setLoading(true);
+    let newId = null;
     try {
       const res = await createIssue({
-        ...formData,
-        location,
+        title,
+        description,
+        categoryId: formData.categoryId,
+        location: {
+          address,
+          lat: latNum,
+          lng: lngNum,
+        },
       });
 
-      if (res.success) {
-        const newId = res.data.id;
-        if (image) {
-          await uploadAttachment(newId, image);
-        }
-        navigate(`/citizen/issue/${newId}`);
-      } else {
-        setError(res.error || "Failed to submit issue report.");
+      if (!res.success) {
+        setError(res.error?.message || "Failed to submit issue report.");
+        return;
       }
+
+      newId = res.data.id;
+      if (image) {
+        try {
+          await uploadAttachment(newId, image);
+        } catch (upErr) {
+          alert(
+            "Issue created, but photo upload failed: " +
+              (upErr.response?.data?.error?.message || "unknown error")
+          );
+        }
+      }
+      navigate(`/citizen/issue/${newId}`);
     } catch (err) {
-      setError("An error occurred while submitting your report.");
+      const d = err.response?.data?.error;
+      const detail = d?.details?.[0] ? ` (${d.details[0].path}: ${d.details[0].message})` : "";
+      setError((d?.message || "An error occurred while submitting your report.") + detail);
     } finally {
       setLoading(false);
     }
@@ -109,15 +191,15 @@ const IssueForm = () => {
             Category <span className="text-rose-500">*</span>
           </label>
           <select
-            name="category"
-            value={formData.category}
+            name="categoryId"
+            value={formData.categoryId}
             onChange={handleChange}
             className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600"
             required
           >
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.name}>
+              <option key={cat.id} value={cat.id}>
                 {cat.name}
               </option>
             ))}
@@ -139,13 +221,54 @@ const IssueForm = () => {
           />
         </div>
 
-        {/* Location Picker */}
+        <InputField
+          label="Address / Landmark"
+          name="address"
+          placeholder="e.g. Main Rd, Sector 4, near bus stop"
+          value={formData.address}
+          onChange={handleChange}
+          required
+        />
+
+        {/* Location */}
         <div>
           <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1 mb-2">
             <MapPin size={14} className="text-teal-600" />
-            Location Coordinates Pin
+            Location Coordinates
           </label>
-          <IssueMap location={location} />
+
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <input
+              type="number"
+              step="any"
+              name="lat"
+              value={coords.lat}
+              onChange={handleCoordChange}
+              placeholder="Latitude"
+              className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600"
+            />
+            <input
+              type="number"
+              step="any"
+              name="lng"
+              value={coords.lng}
+              onChange={handleCoordChange}
+              placeholder="Longitude"
+              className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={useMyLocation}
+            disabled={locating}
+            className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700 dark:text-teal-400 border border-teal-600/40 rounded-xl px-3 py-2 hover:bg-teal-50 dark:hover:bg-teal-950/40 transition-colors cursor-pointer disabled:opacity-60"
+          >
+            <LocateFixed size={14} />
+            {locating ? "Getting location..." : "Use my current location"}
+          </button>
+
+          {coordsValid && <IssueMap location={{ lat: latNum, lng: lngNum }} />}
         </div>
 
         {/* Photo Upload */}
@@ -178,10 +301,10 @@ const IssueForm = () => {
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Click to select an image file
                 </span>
-                <span className="text-[11px] text-slate-400">PNG, JPG, JPEG up to 5MB</span>
+                <span className="text-[11px] text-slate-400">JPG, PNG, WEBP up to 5MB</span>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp"
                   onChange={handleImageChange}
                   className="hidden"
                 />

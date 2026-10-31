@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../Context/AuthContext";
 import InputField from "../../components/common/InputField";
 import Button from "../../components/common/Button";
 import { validateEmail, validatePassword } from "../../utils/helpers";
@@ -8,7 +8,7 @@ import { ROLES, ROUTES } from "../../utils/constants";
 import { ShieldAlert, Mail, Lock, UserCheck, Shield, KeyRound } from "lucide-react";
 
 const Login = () => {
-  const { login, isLoading: authLoading } = useAuth();
+  const { login, logout, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -42,9 +42,20 @@ const Login = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await login(formData);
+      // backend ko role nahi bhejna: sirf email aur password
+      const res = await login({ email: formData.email, password: formData.password });
       if (res.success) {
-        const userRole = res.data?.user?.role || formData.role;
+        const userRole = res.data?.user?.role;
+
+        // chuna hua tab aur account ka asli role milna chahiye
+        if (userRole !== formData.role) {
+          await logout();
+          setServerError(
+            `This is a ${userRole} account. Please select the "${userRole}" tab above and sign in again.`
+          );
+          return;
+        }
+
         if (userRole === ROLES.ADMIN) {
           navigate(ROUTES.ADMIN_DASHBOARD, { replace: true });
         } else if (userRole === ROLES.OFFICIAL) {
@@ -56,24 +67,12 @@ const Login = () => {
         setServerError(res.meta?.error || res.error || "Login failed. Please check credentials.");
       }
     } catch (err) {
-      setServerError("An unexpected error occurred. Please try again.");
+      setServerError(
+        err.response?.data?.error?.message || "An unexpected error occurred. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleQuickFill = (roleType) => {
-    let email = "citizen@civicsense.com";
-    if (roleType === ROLES.OFFICIAL) email = "official@civicsense.com";
-    if (roleType === ROLES.ADMIN) email = "admin@civicsense.com";
-
-    setFormData({
-      email,
-      password: "password123",
-      role: roleType,
-    });
-    setErrors({});
-    setServerError("");
   };
 
   return (
@@ -95,7 +94,7 @@ const Login = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white dark:bg-slate-900 py-8 px-6 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/80 dark:border-slate-800 rounded-3xl sm:px-10">
-          
+
           {/* Role Toggle Selector */}
           <div className="mb-6 p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl flex gap-1">
             <button
@@ -177,36 +176,6 @@ const Login = () => {
               Sign In to CivicSense
             </Button>
           </form>
-
-          {/* Demo Autofill Helpers */}
-          <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-3">
-              Quick Demo Logins
-            </p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickFill(ROLES.CITIZEN)}
-                className="flex-1 py-1.5 px-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-medium text-slate-700 dark:text-slate-300 transition-colors cursor-pointer text-center"
-              >
-                Citizen
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickFill(ROLES.OFFICIAL)}
-                className="flex-1 py-1.5 px-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-medium text-slate-700 dark:text-slate-300 transition-colors cursor-pointer text-center"
-              >
-                Official
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickFill(ROLES.ADMIN)}
-                className="flex-1 py-1.5 px-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-medium text-slate-700 dark:text-slate-300 transition-colors cursor-pointer text-center"
-              >
-                Admin
-              </button>
-            </div>
-          </div>
 
           <div className="mt-6 text-center">
             <p className="text-xs text-slate-600 dark:text-slate-400">

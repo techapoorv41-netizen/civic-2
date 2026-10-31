@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { generateAnalysis, getAnalysis } from "../../api/aiApi";
+import { generateAnalysis, getAnalysis } from "../../Api/aiApi";
 import ReportAnalysisChart from "../../components/charts/ReportAnalysisChart";
 import Loader from "../../components/common/Loader";
 import Button from "../../components/common/Button";

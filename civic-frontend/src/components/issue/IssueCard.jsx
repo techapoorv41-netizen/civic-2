@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import IssueStatusBadge from "./IssueStatusBadge";
 import { formatDate } from "../../utils/helpers";
-import { MapPin, Calendar, ArrowRight } from "lucide-react";
+import { Calendar, ArrowRight } from "lucide-react";
 
 const IssueCard = ({ issue }) => {
   const navigate = useNavigate();
@@ -10,6 +10,11 @@ const IssueCard = ({ issue }) => {
   const handleClick = () => {
     navigate(`/citizen/issue/${issue.id}`);
   };
+
+  const categoryName =
+    typeof issue.category === "string"
+      ? issue.category
+      : issue.category?.name || "General";
 
   return (
     <div
@@ -19,7 +24,7 @@ const IssueCard = ({ issue }) => {
       <div>
         <div className="flex justify-between items-start gap-3 mb-3">
           <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider bg-teal-50 dark:bg-teal-950/40 px-2.5 py-1 rounded-lg border border-teal-200/50 dark:border-teal-900/50">
-            {issue.category || "General"}
+            {categoryName}
           </span>
           <IssueStatusBadge status={issue.status} />
         </div>

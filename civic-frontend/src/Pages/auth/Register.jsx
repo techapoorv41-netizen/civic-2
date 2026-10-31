@@ -1,11 +1,46 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../Context/AuthContext";
 import InputField from "../../components/common/InputField";
 import Button from "../../components/common/Button";
-import { validateEmail, validatePassword, validatePhone } from "../../utils/helpers";
 import { ROLES, ROUTES } from "../../utils/constants";
 import { ShieldAlert, User, Mail, Lock, Phone, UserCheck, Shield } from "lucide-react";
+
+const checkName = (v) => {
+  const s = v.trim();
+  if (!s) return "Full name is required";
+  if (s.length < 2) return "Name must be at least 2 characters";
+  if (s.length > 60) return "Name can be at most 60 characters";
+  return "";
+};
+
+const checkEmail = (v) => {
+  const s = v.trim();
+  if (!s) return "Email is required";
+  if (!/^\S+@\S+\.\S+$/.test(s)) return "Enter a valid email address";
+  return "";
+};
+
+const checkPassword = (v) => {
+  if (!v) return "Password is required";
+  if (v.length < 8) return "Password must be at least 8 characters";
+  if (!/[A-Za-z]/.test(v)) return "Password must contain a letter";
+  if (!/\d/.test(v)) return "Password must contain a number";
+  return "";
+};
+
+const checkPhone = (v) => {
+  const s = v.trim();
+  if (!s) return "Phone number is required";
+  if (!/^[0-9+\-\s]{8,15}$/.test(s)) return "Phone must be 8 to 15 characters (digits, +, -, space)";
+  return "";
+};
+
+const getErrMsg = (err) => {
+  const e = err?.response?.data?.error;
+  if (e?.details?.length) return `${e.message}: ${e.details[0].path} - ${e.details[0].message}`;
+  return e?.message || err?.message || "Registration failed. Please try again.";
+};
 
 const Register = () => {
   const { register, isLoading: authLoading } = useAuth();
@@ -36,10 +71,10 @@ const Register = () => {
     e.preventDefault();
     setServerError("");
 
-    const nameErr = !formData.name.trim() ? "Full name is required" : "";
-    const emailErr = validateEmail(formData.email);
-    const passErr = validatePassword(formData.password);
-    const phoneErr = validatePhone(formData.phone);
+    const nameErr = checkName(formData.name);
+    const emailErr = checkEmail(formData.email);
+    const passErr = checkPassword(formData.password);
+    const phoneErr = checkPhone(formData.phone);
 
     if (nameErr || emailErr || passErr || phoneErr) {
       setErrors({
@@ -51,20 +86,28 @@ const Register = () => {
       return;
     }
 
+    const payload = {
+      name: formData.name.trim(),
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password,
+      phone: formData.phone.trim(),
+      role: formData.role,
+    };
+
     setIsSubmitting(true);
     try {
-      const res = await register(formData);
-      if (res.success) {
+      const res = await register(payload);
+      if (res?.success) {
         if (res.data?.user?.role === ROLES.OFFICIAL) {
           navigate(ROUTES.OFFICIAL_DASHBOARD, { replace: true });
         } else {
           navigate(ROUTES.CITIZEN_HOME, { replace: true });
         }
       } else {
-        setServerError(res.meta?.error || "Registration failed. Please try again.");
+        setServerError(res?.meta?.error || "Registration failed. Please try again.");
       }
     } catch (err) {
-      setServerError("An unexpected error occurred during registration.");
+      setServerError(getErrMsg(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -170,24 +213,25 @@ const Register = () => {
               label="Phone Number"
               name="phone"
               type="tel"
-              placeholder="+1 555-0199 (Optional)"
+              placeholder="+91 9876543210"
               value={formData.phone}
               onChange={handleChange}
               error={errors.phone}
               leftIcon={<Phone size={18} />}
+              required
             />
 
             <InputField
               label="Password"
               name="password"
               type="password"
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
               leftIcon={<Lock size={18} />}
               required
-              helperText="Must contain at least 6 characters"
+              helperText="At least 8 characters, with a letter and a number"
             />
 
             <Button

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getIssues } from "../../api/issueApi";
+import { getIssues } from "../../Api/issueApi";
 import IssueCard from "../../components/issue/IssueCard";
 import Button from "../../components/common/Button";
 import { ROUTES } from "../../utils/constants";
@@ -21,10 +21,21 @@ const Homepage = () => {
     fetchRecent();
   }, []);
 
+  const latest = recentIssues[0];
+  const analysisLink = latest
+    ? ROUTES.CITIZEN_ANALYSIS.replace(":id", latest.id)
+    : ROUTES.CITIZEN_MY_REPORTS;
+  const botLink = latest
+    ? ROUTES.CITIZEN_AI_BOT.replace(":id", latest.id)
+    : ROUTES.CITIZEN_MY_REPORTS;
+
+  const cardClass =
+    "block bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-teal-500 transition-all cursor-pointer";
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-10">
-        
+
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-teal-700 via-emerald-600 to-teal-800 rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden">
           <div className="relative z-10 max-w-2xl space-y-4">
@@ -57,7 +68,7 @@ const Homepage = () => {
 
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+          <Link to={ROUTES.CITIZEN_REPORT} className={cardClass}>
             <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center mb-4">
               <PlusCircle size={24} />
             </div>
@@ -65,9 +76,9 @@ const Homepage = () => {
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
               Upload photo evidence and location details directly to municipal administration.
             </p>
-          </div>
+          </Link>
 
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+          <Link to={analysisLink} className={cardClass}>
             <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
               <Sparkles size={24} />
             </div>
@@ -75,9 +86,9 @@ const Homepage = () => {
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
               Automated category detection, duplicate checking, and severity scoring algorithms.
             </p>
-          </div>
+          </Link>
 
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+          <Link to={botLink} className={cardClass}>
             <div className="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-4">
               <Bot size={24} />
             </div>
@@ -85,7 +96,7 @@ const Homepage = () => {
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
               Ask questions about resolution timelines and repair guidelines 24/7.
             </p>
-          </div>
+          </Link>
         </div>
 
         {/* Recent Community Activity */}
